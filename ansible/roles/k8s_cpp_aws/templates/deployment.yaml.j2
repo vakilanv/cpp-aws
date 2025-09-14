@@ -15,7 +15,7 @@ spec:
       containers:
         - name: frontend
           image: vakilanv/cpp-aws:frontend
-          imagePullPolicy: always
+          imagePullPolicy: Always
           ports:
             - containerPort: 3000
           resources:
@@ -51,7 +51,7 @@ spec:
       containers:
         - name: backend-java
           image: vakilanv/cpp-aws:backend-java
-          imagePullPolicy: always
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           resources:
@@ -82,7 +82,7 @@ spec:
       containers:
         - name: backend-python
           image: vakilanv/cpp-aws:backend-python
-          imagePullPolicy: always
+          imagePullPolicy: Always
           ports:
             - containerPort: 5000
           resources:
