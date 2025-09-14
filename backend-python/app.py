@@ -1,7 +1,9 @@
 from flask import Flask, request, jsonify
 from datetime import datetime
 
+
 app = Flask(__name__)
+
 
 @app.route("/day")
 def get_day_of_week():
@@ -12,6 +14,7 @@ def get_day_of_week():
         return jsonify({"day": day_name})
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
