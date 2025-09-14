@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: vakilanv/cpp-aws:frontend
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+          env:
+            - name: JAVA_BACKEND
+              value: "http://backend-java:8080/java"
+            - name: PYTHON_BACKEND
+              value: "http://backend-python:5000/python"
+      imagePullSecrets:
+        - name: regcred
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-java
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-java
+  template:
+    metadata:
+      labels:
+        app: backend-java
+    spec:
+      containers:
+        - name: backend-java
+          image: vakilanv/cpp-aws:backend-java
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+      imagePullSecrets:
+        - name: regcred
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-python
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-python
+  template:
+    metadata:
+      labels:
+        app: backend-python
+    spec:
+      containers:
+        - name: backend-python
+          image: vakilanv/cpp-aws:backend-python
+          ports:
+            - containerPort: 5000
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+      imagePullSecrets:
+        - name: regcred

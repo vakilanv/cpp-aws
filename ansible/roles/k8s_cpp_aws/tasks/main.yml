@@ -1,0 +1,19 @@
+---
+- name: Create cpp-aws namespace
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: cpp-aws
+    wait: yes   # wait until the namespace exists
+
+- name: Deploy microservices
+  kubernetes.core.k8s:
+    namespace: cpp-aws
+    state: present
+    definition: "{{ lookup('template', item) }}"
+  loop:
+    - "../roles/k8s_cpp_aws/templates/deployment.yaml.j2"
+    - "../roles/k8s_cpp_aws/templates/service.yaml.j2"
