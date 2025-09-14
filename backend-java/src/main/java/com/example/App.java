@@ -16,7 +16,7 @@ import java.util.Map;
  */
 @SpringBootApplication
 @RestController
-public final class App {
+public class App {
 
     /**
      * Main entry point for the Java Spring Boot application.
@@ -43,7 +43,7 @@ public final class App {
             "age",
             age
         );
+
         return response;
     }
 }
-
