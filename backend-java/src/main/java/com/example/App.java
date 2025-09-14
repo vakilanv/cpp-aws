@@ -3,31 +3,28 @@ package com.example;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Main application class for the Java backend service.
- */
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.HashMap;
+import java.util.Map;
+
 @SpringBootApplication
 @RestController
-public final class App {
+public class App {
 
-    /**
-     * Main entry point for the Java Spring Boot application.
-     *
-     * @param args command-line arguments
-     */
-    public static void main(final String[] args) {
+    public static void main(String[] args) {
         SpringApplication.run(App.class, args);
     }
 
-    /**
-     * Simple endpoint to return a greeting from the Java backend.
-     *
-     * @return greeting message
-     */
-    @GetMapping("/java")
-    public String helloJava() {
-        return "Hello from Java Service";
+    @GetMapping("/age")
+    public Map<String, Integer> calculateAge(@RequestParam String birthdate) {
+        LocalDate dob = LocalDate.parse(birthdate);
+        int age = Period.between(dob, LocalDate.now()).getYears();
+        Map<String, Integer> response = new HashMap<>();
+        response.put("age", age);
+        return response;
     }
 }

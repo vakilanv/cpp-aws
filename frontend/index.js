@@ -4,61 +4,41 @@ const app = express();
 const port = 3000;
 
 // Backend service URLs (from environment variables)
-const JAVA_BACKEND = process.env.JAVA_BACKEND || 'http://backend-java:8080/java';
-const PYTHON_BACKEND = process.env.PYTHON_BACKEND || 'http://backend-python:5000/python';
+const JAVA_BACKEND = process.env.JAVA_BACKEND || 'http://backend-java:8080/age';
+const PYTHON_BACKEND = process.env.PYTHON_BACKEND || 'http://backend-python:5000/day';
 
-// Middleware to log incoming requests
-app.use((req, res, next) => {
-  console.log(`[REQUEST] ${req.method} ${req.url}`);
-  next();
-});
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-// Route: /java -> calls Java backend
-app.get('/java', async (req, res) => {
-  try {
-    const response = await axios.get(JAVA_BACKEND);
-    console.log('[INFO] Java backend response:', response.data);
-    res.send(response.data);
-  } catch (err) {
-    console.error('[ERROR] Failed to contact Java backend:', err.message);
-    res.status(500).send('Error contacting Java backend');
-  }
-});
-
-// Route: /python -> calls Python backend
-app.get('/python', async (req, res) => {
-  try {
-    const response = await axios.get(PYTHON_BACKEND);
-    console.log('[INFO] Python backend response:', response.data);
-    res.send(response.data);
-  } catch (err) {
-    console.error('[ERROR] Failed to contact Python backend:', err.message);
-    res.status(500).send('Error contacting Python backend');
-  }
-});
-
-// Homepage
+// Homepage with birthdate form
 app.get('/', (req, res) => {
-  console.log('[INFO] Serving homepage');
   res.send(`
-    <h1>Frontend Proxy</h1>
-    <ul>
-      <li><a href="/java">Java Backend</a></li>
-      <li><a href="/python">Python Backend</a></li>
-    </ul>
+    <h1>Birthday Demo</h1>
+    <form action="/result" method="post">
+      <label>Enter your birthdate:</label>
+      <input type="date" name="birthdate" required>
+      <button type="submit">Submit</button>
+    </form>
   `);
 });
 
-// Catch-all for undefined routes
-app.use((req, res) => {
-  console.warn('[WARN] Unknown route accessed:', req.originalUrl);
-  res.status(404).send('Not Found');
-});
+// Handle form submission
+app.post('/result', async (req, res) => {
+  const birthdate = req.body.birthdate;
+  try {
+    const javaResp = await axios.get(`${JAVA_BACKEND}?birthdate=${birthdate}`);
+    const pythonResp = await axios.get(`${PYTHON_BACKEND}?birthdate=${birthdate}`);
 
-// Global error handler
-app.use((err, req, res) => {
-  console.error('[ERROR] Unhandled exception:', err);
-  res.status(500).send('Internal Server Error');
+    res.send(`
+      <h2>Results</h2>
+      <p>Age (Java backend): ${javaResp.data.age}</p>
+      <p>Day of the week (Python backend): ${pythonResp.data.day}</p>
+      <a href="/">Go back</a>
+    `);
+  } catch (err) {
+    console.error("[ERROR] Backend call failed:", err.message);
+    res.status(500).send("Error calling backend services");
+  }
 });
 
 app.listen(port, () => {

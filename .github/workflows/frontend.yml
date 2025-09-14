@@ -44,3 +44,12 @@ jobs:
           docker build -t $IMAGE .
           echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
           docker push $IMAGE
+
+      - name: Scan Docker image for vulnerabilities
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: docker.io/vakilanv/cpp-aws:frontend
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          format: table
+          vuln-type: 'os,library'
