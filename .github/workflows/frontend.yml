@@ -13,6 +13,7 @@ jobs:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       IMAGE: docker.io/vakilanv/cpp-aws:frontend
+
     steps:
       - uses: actions/checkout@v3
 
@@ -25,8 +26,19 @@ jobs:
         run: |
           cd frontend
           npm install
+          npm install eslint --save-dev
 
-      - name: Build Docker image
+      - name: Lint with ESLint
+        run: |
+          cd frontend
+          npx eslint .
+
+      - name: Scan for secrets
+        uses: gitleaks/gitleaks-action@v2
+        with:
+          args: detect --source . --no-banner --redact
+
+      - name: Build & Push Docker image
         run: |
           cd frontend
           docker build -t $IMAGE .

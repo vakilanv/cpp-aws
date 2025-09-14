@@ -13,6 +13,7 @@ jobs:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       IMAGE: docker.io/vakilanv/cpp-aws:backend-python
+
     steps:
       - uses: actions/checkout@v3
 
@@ -25,8 +26,19 @@ jobs:
         run: |
           cd backend-python
           pip install -r requirements.txt
+          pip install flake8
 
-      - name: Build Docker image
+      - name: Lint with Flake8
+        run: |
+          cd backend-python
+          flake8 .
+
+      - name: Scan for secrets
+        uses: gitleaks/gitleaks-action@v2
+        with:
+          args: detect --source . --no-banner --redact
+
+      - name: Build & Push Docker image
         run: |
           cd backend-python
           docker build -t $IMAGE .

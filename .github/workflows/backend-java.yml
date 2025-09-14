@@ -13,6 +13,7 @@ jobs:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       IMAGE: docker.io/vakilanv/cpp-aws:backend-java
+
     steps:
       - uses: actions/checkout@v3
 
@@ -22,12 +23,22 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Lint with Checkstyle
+        run: |
+          cd backend-java
+          mvn checkstyle:check
+
+      - name: Scan for secrets
+        uses: gitleaks/gitleaks-action@v2
+        with:
+          args: detect --source . --no-banner --redact
+
       - name: Build Java project
         run: |
           cd backend-java
           mvn package -DskipTests
 
-      - name: Build Docker image
+      - name: Build & Push Docker image
         run: |
           cd backend-java
           docker build -t $IMAGE .

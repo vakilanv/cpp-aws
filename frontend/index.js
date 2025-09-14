@@ -45,16 +45,8 @@ app.get('/', (req, res) => {
     <ul>
       <li><a href="/java">Java Backend</a></li>
       <li><a href="/python">Python Backend</a></li>
-      <li><a href="/error">Trigger Frontend Error</a></li>
     </ul>
   `);
-});
-
-// Route: /error -> always triggers 500 for demo
-app.get('/error', (req, res) => {
-  const errMsg = 'Frontend Internal Server Error (for demo)';
-  console.error('[ERROR] ' + errMsg);
-  res.status(500).send(errMsg);
 });
 
 // Catch-all for undefined routes
@@ -64,7 +56,7 @@ app.use((req, res) => {
 });
 
 // Global error handler
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   console.error('[ERROR] Unhandled exception:', err);
   res.status(500).send('Internal Server Error');
 });
