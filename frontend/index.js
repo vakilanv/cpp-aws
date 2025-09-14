@@ -1,40 +1,46 @@
-import express from "express";
-import fetch from "node-fetch";
-
+const express = require('express');
+const axios = require('axios');
 const app = express();
 const port = 3000;
 
 const JAVA_BACKEND = process.env.JAVA_BACKEND || 'http://backend-java:8080/java';
 const PYTHON_BACKEND = process.env.PYTHON_BACKEND || 'http://backend-python:5000/python';
 
-app.get("/", async (req, res) => {
-    const javaData = await fetch(JAVA_BACKEND)
-        .then(r => r.json().catch(() => ({message: r.statusText})))
-        .catch(err => ({message: err.message}));
-
-    const pythonData = await fetch(PYTHON_BACKEND)
-        .then(r => r.json().catch(() => ({message: r.statusText})))
-        .catch(err => ({message: err.message}));
-
-    res.json({
-        java: javaData.message,
-        python: pythonData.message
-    });
+app.get('/java', async (req, res) => {
+  try {
+    const response = await axios.get(JAVA_BACKEND);
+    res.send(response.data);
+  } catch (err) {
+    res.status(500).send('Error contacting Java backend');
+  }
 });
 
-app.get("/error", async (req, res) => {
-    const javaError = await fetch(JAVA_BACKEND.replace('/java','/error'))
-        .then(r => r.json().catch(() => ({message: r.statusText})))
-        .catch(err => ({message: err.message}));
-
-    const pythonError = await fetch(PYTHON_BACKEND.replace('/python','/error'))
-        .then(r => r.json().catch(() => ({message: r.statusText})))
-        .catch(err => ({message: err.message}));
-
-    res.status(500).json({
-        java: javaError.message,
-        python: pythonError.message
-    });
+app.get('/python', async (req, res) => {
+  try {
+    const response = await axios.get(PYTHON_BACKEND);
+    res.send(response.data);
+  } catch (err) {
+    res.status(500).send('Error contacting Python backend');
+  }
 });
 
-app.listen(port, () => console.log(`Frontend running on port ${port}`));
+// Homepage
+app.get('/', (req, res) => {
+  res.send(`
+    <h1>Frontend Proxy</h1>
+    <ul>
+      <li><a href="/java">Java Backend</a></li>
+      <li><a href="/python">Python Backend</a></li>
+      <li><a href="/error">Trigger Frontend Error</a></li>
+    </ul>
+  `);
+});
+
+// Always return 500 to demo errors
+app.get('/error', (req, res) => {
+  res.status(500).send('Frontend Internal Server Error (for demo)');
+});
+
+app.listen(port, () => {
+  console.log(`Frontend running on port ${port}`);
+});
