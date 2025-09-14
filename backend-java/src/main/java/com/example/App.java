@@ -3,6 +3,7 @@ package com.example;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
@@ -30,19 +31,21 @@ public class App {
     /**
      * Calculates the age in years based on the provided birthdate.
      *
-     * @param birthdate birthdate in ISO format (yyyy-MM-dd)
-     * @return a map containing the key "age"
+     * @param name      Name of the person
+     * @param birthdate Birthdate in ISO format (yyyy-MM-dd)
+     * @return Map containing "name" and "age"
      */
     @GetMapping("/age")
-    public Map<String, Integer> calculateAge(final String birthdate) {
+    public Map<String, Object> calculateAge(
+            final @RequestParam String name,
+            final @RequestParam String birthdate) {
+
         final LocalDate dob = LocalDate.parse(birthdate);
         final int age = Period.between(dob, LocalDate.now()).getYears();
 
-        final Map<String, Integer> response = new HashMap<>();
-        response.put(
-            "age",
-            age
-        );
+        final Map<String, Object> response = new HashMap<>();
+        response.put("name", name);
+        response.put("age", age);
 
         return response;
     }
