@@ -1,18 +1,21 @@
-package com.example;
+package com.example.backendjava;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@SpringBootApplication
 @RestController
-public class App {
-    public static void main(String[] args) {
-        SpringApplication.run(App.class, args);
-    }
+public class BackendController {
 
     @GetMapping("/java")
-    public String helloJava() {
-        return "Hello from Java Service";
+    public ResponseEntity<String> getMessage() {
+        return ResponseEntity.ok("Hello from Java Backend!");
+    }
+
+    @GetMapping("/error")
+    public ResponseEntity<String> getError() {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                             .body("Java Backend Error Triggered!");
     }
 }
