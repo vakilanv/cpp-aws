@@ -1,0 +1,34 @@
+name: Backend Python CI/CD
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'backend-python/**'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      IMAGE: docker.io/vakilanv/cpp-aws:backend-python
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          cd backend-python
+          pip install -r requirements.txt
+
+      - name: Build Docker image
+        run: |
+          cd backend-python
+          docker build -t $IMAGE .
+          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+          docker push $IMAGE

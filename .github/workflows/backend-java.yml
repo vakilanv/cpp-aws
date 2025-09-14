@@ -1,0 +1,35 @@
+name: Backend Java CI/CD
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'backend-java/**'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      IMAGE: docker.io/vakilanv/cpp-aws:backend-java
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build Java project
+        run: |
+          cd backend-java
+          mvn package -DskipTests
+
+      - name: Build Docker image
+        run: |
+          cd backend-java
+          docker build -t $IMAGE .
+          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+          docker push $IMAGE
