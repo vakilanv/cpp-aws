@@ -1,0 +1,43 @@
+---
+- name: Deploy SonarQube via Helm
+  hosts: localhost
+  gather_facts: false
+  tasks:
+
+    - name: Ensure namespace exists
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: sonarqube
+
+    - name: Add SonarQube Helm repository
+      community.kubernetes.helm_repository:
+        name: sonarqube
+        repo_url: https://SonarSource.github.io/helm-chart-sonarqube
+
+    - name: Deploy SonarQube Helm chart without persistence
+      community.kubernetes.helm:
+        name: sonarqube
+        chart_ref: sonarqube/sonarqube
+        namespace: sonarqube
+        release_namespace: sonarqube
+        create_namespace: true
+        values:
+          community:
+            enabled: true
+          monitoringPasscode: "SuperSecretPass123"
+          persistence:
+            enabled: false
+          postgresql:
+            persistence:
+              enabled: false
+            resources:
+              limits:
+                cpu: "200m"
+                memory: "200Mi"
+              requests:
+                cpu: "100m"
+                memory: "100Mi"

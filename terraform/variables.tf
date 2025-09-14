@@ -10,17 +10,17 @@ variable "cluster_name" {
 
 variable "node_instance_type" {
   description = "Worker node instance type"
-  default     = "t3.micro"
+  default     = "t3.xlarge"
 }
 
 variable "desired_size" {
-  default     = 3
+  default     = 1
 }
 
 variable "min_size" {
-  default     = 3
+  default     = 1
 }
 
 variable "max_size" {
-  default     = 3
+  default     = 1
 }

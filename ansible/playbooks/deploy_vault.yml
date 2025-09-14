@@ -1,0 +1,23 @@
+---
+- name: Deploy Vault on EKS
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Add HashiCorp Helm repo
+      community.kubernetes.helm_repository:
+        name: hashicorp
+        repo_url: https://helm.releases.hashicorp.com
+
+    - name: Install Vault with Helm
+      community.kubernetes.helm:
+        name: vault
+        chart_ref: hashicorp/vault
+        namespace: vault
+        create_namespace: true
+        values:
+          server:
+            dev:
+              enabled: true
+          injector:
+            enabled: true
