@@ -29,7 +29,7 @@ public class App {
     }
 
     /**
-     * Calculates the age in years based on the provided birthdate
+     * Calculates age in years based on the provided birthdate.
      *
      * @param name      Name of the person
      * @param birthdate Birthdate in ISO format (yyyy-MM-dd)
