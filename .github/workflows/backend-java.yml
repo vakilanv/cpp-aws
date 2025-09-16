@@ -33,17 +33,38 @@ jobs:
         with:
           args: detect --source . --no-banner --redact
 
+      - name: Cache SonarQube packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: SonarCloud Scan
+        working-directory: backend-java
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+              -Dsonar.projectKey=backend-jabva \
+              -Dsonar.organization=vakilanv
+
       - name: Build Java project
         run: |
           cd backend-java
           mvn package -DskipTests
 
-      - name: Build & Push Docker image
+      - name: Build Docker image
         run: |
           cd backend-java
           docker build -t $IMAGE .
           echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-          docker push $IMAGE
 
       - name: Scan Docker image for vulnerabilities
         uses: aquasecurity/trivy-action@0.28.0
@@ -53,3 +74,8 @@ jobs:
           ignore-unfixed: true
           format: table
           vuln-type: 'os,library'
+
+      - name: Push Docker image
+        run: |
+          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+          docker push $IMAGE
