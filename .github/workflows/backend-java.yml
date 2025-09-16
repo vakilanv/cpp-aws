@@ -54,7 +54,7 @@ jobs:
         run: mvn clean verify sonar:sonar \
               -Dsonar.projectKey=cpp-backend-java \
               -Dsonar.projectName='cpp-backend-java' \
-              -Dsonar.host.url=-Dsonar.host.url=https://sonarcloud.io \
+              -Dsonar.host.url=https://sonarcloud.io \
 
       - name: Build Java project
         run: |
