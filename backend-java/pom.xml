@@ -18,6 +18,10 @@
         <java.version>17</java.version>
     </properties>
 
+    <properties>
+        <sonar.organization>vakilanv</sonar.organization>
+    </properties>
+
     <dependencies>
         <!-- Spring Boot Web for REST endpoints -->
         <dependency>
